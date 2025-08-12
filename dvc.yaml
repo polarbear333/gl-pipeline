@@ -1,0 +1,18 @@
+stages:
+  ingest:
+    cmd: python -m src.data.ingest_raw_data
+    deps:
+      - src/data/ingest_raw_data.py
+      - src/data/ingestion.py
+      - src/config/settings.py
+    outs:
+      - data/raw
+
+  process:
+    cmd: python -m src.data.process_raw_data
+    deps:
+      - src/data/process_raw_data.py
+      - src/config/settings.py
+      - data/raw
+    outs:
+      - data/processed/general_ledger.parquet

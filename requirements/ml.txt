@@ -1,0 +1,22 @@
+# Analytics & Statistics
+scikit-learn>=1.3.0        # ML algorithms and preprocessing
+xgboost>=1.7.0             # Gradient boosting
+lightgbm>=4.0.0            # Alternative gradient boosting
+catboost>=1.2.0            # Categorical feature handling
+statsmodels>=0.14.0        # Statistical modeling and tests
+scipy>=1.11.0              # Scientific computing
+pingouin>=0.5.3            # Statistical tests and effect sizes
+
+# Time Series & Forecasting
+prophet>=1.1.4             # Facebook Prophet forecasting
+pmdarima>=2.0.3            # Auto-ARIMA implementation
+sktime>=0.24.0             # Unified time series framework
+statsforecast>=1.4.0       # High-performance statistical forecasting models
+
+# Bayesian & Advanced Modeling
+pymc>=5.7.0                # Bayesian statistical modeling
+arviz>=0.16.0              # Bayesian analysis and visualization
+bambi>=0.12.0              # High-level Bayesian modeling
+
+# Unsupervised & Other
+umap-learn>=0.5.4          # UMAP for dimensionality reduction

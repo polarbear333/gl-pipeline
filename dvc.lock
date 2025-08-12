@@ -1,0 +1,44 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python -m src.data.ingest_raw_data
+    deps:
+    - path: src/config/settings.py
+      hash: md5
+      md5: 7b8b03d581b56de520bfaf2db2ae190f
+      size: 4651
+    - path: src/data/ingest_raw_data.py
+      hash: md5
+      md5: 0b039a4b03e1e51260caed6992b8446b
+      size: 1186
+    - path: src/data/ingestion.py
+      hash: md5
+      md5: 71697c34853c377b938751f33dbff180
+      size: 5308
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 4d9ac221b957a0ed970b0110076657d8.dir
+      size: 2493295740
+      nfiles: 32
+  process:
+    cmd: python -m src.data.process_raw_data
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 4d9ac221b957a0ed970b0110076657d8.dir
+      size: 2493295740
+      nfiles: 32
+    - path: src/config/settings.py
+      hash: md5
+      md5: 7b8b03d581b56de520bfaf2db2ae190f
+      size: 4651
+    - path: src/data/process_raw_data.py
+      hash: md5
+      md5: c7f28844769ebd39271f1a52a2f71c0d
+      size: 2175
+    outs:
+    - path: data/processed/general_ledger.parquet
+      hash: md5
+      md5: 64311fb51dc52339d0396a7e5de03fa2
+      size: 97331999

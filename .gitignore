@@ -1,0 +1,6 @@
+.env
+plan.md
+refined_plan.md
+data/raw/
+docs
+__pycache__/

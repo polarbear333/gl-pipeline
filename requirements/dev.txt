@@ -1,0 +1,13 @@
+pytest>=7.4.0              
+pytest-asyncio>=0.21.0     
+pytest-cov>=4.1.0          
+black>=23.9.0              
+isort>=5.12.0              
+flake8>=6.1.0              
+ruff>=0.1.0                
+mypy>=1.5.0                
+pre-commit>=3.4.0          # Git hooks management
+great-expectations>=0.17.0 # Data validation (alternative to pandera)
+ydata-profiling>=4.5.0     
+ipykernel                  
+nbdev                      
