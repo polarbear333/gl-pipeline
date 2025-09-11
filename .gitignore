@@ -10,7 +10,7 @@ src/__pycache__/
 .dvc/config
 /dvc/config/local
 fms
-.github
+instructions.md
 /__pycache__/*
 logs/dbt.log
 dev.duckdb.tmp
