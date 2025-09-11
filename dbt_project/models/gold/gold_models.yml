@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  # ... (your kpi_monthly_summary and any dimension models can be here too)
+  - name: fct_transactions
+    description: "The central fact table for the financial monitoring system. Contains one row per ledger transaction, linked to the surrounding dimension tables."
+    
+    columns:
+      - name: agency_sk
+        description: "The foreign key linking to the dim_agencies table."
+        tests:
+          - relationships:
+              to: ref('dim_agencies')
+              field: agency_sk
+
+      - name: fund_sk
+        description: "The foreign key linking to the dim_funds table."
+        tests:
+          - relationships:
+              to: ref('dim_funds')
+              field: fund_sk
+
+      - name: department_sk
+        description: "The foreign key linking to the dim_departments table."
+        tests:
+          - relationships:
+              to: ref('dim_departments')
+              field: department_sk
+
+      - name: account_sk
+        description: "The foreign key linking to the dim_accounts table."
+        tests:
+          - relationships:
+              to: ref('dim_accounts')
+              field: account_sk
+          - assert_allowed_account_for_fund:
+              fund_column: fund_sk 
+              allowed_accounts_map:
+                'Highway Fund SK': ['Asphalt', 'Concrete', 'Salaries']
+                'Education Fund SK': ['Textbooks', 'Computers']
+      
+      - name: amount
+        description: "The core numeric fact: the monetary value of the transaction."
+        tests:
+          - not_null
+      
+      - name: mart_fund_year_period
+        description: "Monthly aggregated financial data for each fund. Used for time-series analysis of fund performance."
+        columns:
+          - name: fiscal_year
+            tests:
+              - not_null
+          - name: month
+            tests:
+              - not_null
+          - name: fund_code
+            tests:
+              - not_null
+          - name: net_amount
+            description: "Critical business logic check for the fund's monthly net."
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "round(total_revenue + total_expenses, 2) = round(net_amount, 2)"
+
+      - name: mart_agency_fund_year
+        description: "Annual aggregated financial data for each agency-fund combination. Used for high-level budgetary review."
+        columns:
+          - name: fiscal_year
+            tests:
+              - not_null
+          - name: agency_id
+            tests:
+              - not_null
+          - name: fund_code
+            tests:
+              - not_null
+          - name: net_amount
+            description: "Critical business logic check for the annual net."
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: "round(total_revenue + total_expenses, 2) = round(net_amount, 2)"

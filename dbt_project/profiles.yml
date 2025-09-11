@@ -1,0 +1,13 @@
+dbt_project:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dbt_project/dbt_project.duckdb
+      database: dbt_project
+      schema: main
+      extensions:
+        - httpfs
+        - parquet
+      threads: 8
+      external_root: "./"

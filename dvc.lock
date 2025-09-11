@@ -5,8 +5,8 @@ stages:
     deps:
     - path: src/config/settings.py
       hash: md5
-      md5: 7b8b03d581b56de520bfaf2db2ae190f
-      size: 4651
+      md5: 57429667fe8ee4407d4a115f3393227a
+      size: 4803
     - path: src/data/ingest_raw_data.py
       hash: md5
       md5: 0b039a4b03e1e51260caed6992b8446b
@@ -18,27 +18,140 @@ stages:
     outs:
     - path: data/raw
       hash: md5
-      md5: 4d9ac221b957a0ed970b0110076657d8.dir
+      md5: 21ed87de8f66fe86664279a873d7aff6.dir
       size: 2493295740
       nfiles: 32
-  process:
-    cmd: python -m src.data.process_raw_data
+  transform_to_silver:
+    cmd: dbt run --project-dir dbt_project --select stg_ledger --profiles-dir dbt_project
     deps:
     - path: data/raw
       hash: md5
-      md5: 4d9ac221b957a0ed970b0110076657d8.dir
+      md5: 21ed87de8f66fe86664279a873d7aff6.dir
       size: 2493295740
       nfiles: 32
-    - path: src/config/settings.py
+    - path: dbt_project/dbt_project.yml
       hash: md5
-      md5: 7b8b03d581b56de520bfaf2db2ae190f
-      size: 4651
-    - path: src/data/process_raw_data.py
+      md5: 5c0ca09d1d51d140761549273f0d71ec
+      size: 953
+    - path: dbt_project/models/silver/stg_ledger.sql
       hash: md5
-      md5: c7f28844769ebd39271f1a52a2f71c0d
-      size: 2175
+      md5: 562c04243c95d8a5357e7b0139894b50
+      size: 4697
+    - path: dbt_project/models/sources.yml
+      hash: md5
+      md5: 1391f2fed9643ae769afd291faa88c50
+      size: 457
+    - path: dbt_project/profiles.yml
+      hash: md5
+      md5: f41dd3996619a30db4c54554fe92337d
+      size: 265
     outs:
-    - path: data/processed/general_ledger.parquet
+    - path: data/silver/stg_ledger.parquet
       hash: md5
-      md5: 64311fb51dc52339d0396a7e5de03fa2
-      size: 97331999
+      md5: 1aa04d968984046362ea0732aabea01e
+      size: 263027577
+  validate_silver_data:
+    cmd: python scripts/validations/run_ge_validation.py
+    deps:
+    - path: data/silver/stg_ledger.parquet
+      hash: md5
+      md5: 1aa04d968984046362ea0732aabea01e
+      size: 263027577
+    - path: great_expectations/expectations
+      hash: md5
+      md5: eee835cfd4827e5c53669bba2925cbcf.dir
+      size: 1783
+      nfiles: 2
+    - path: great_expectations/great_expectations.yml
+      hash: md5
+      md5: fccd413ee6cf2abb39131b525001060d
+      size: 4911
+    - path: scripts/validations/run_ge_validation.py
+      hash: md5
+      md5: ca5b92f3af7ea1b7cd8631d9a27bb81c
+      size: 9269
+    outs:
+    - path: great_expectations/uncommitted/data_docs/local_site/index.html
+      hash: md5
+      md5: cbb99e5ab457cb3ae253fd68badbdf39
+      size: 1193
+  transform_to_gold:
+    cmd: "dbt run --project-dir dbt_project --models gold.* && python -c \"import\
+      \ duckdb; con = duckdb.connect('dbt_project.duckdb'); con.execute(\\\"EXPORT\
+      \ DATABASE 'data/gold' (FORMAT PARQUET, CODEC 'ZSTD')\\\");\"\n"
+    deps:
+    - path: data/silver/stg_ledger.parquet
+      hash: md5
+      md5: 441054331e48c65eb5b3f68a934e70aa
+      size: 262966180
+    - path: dbt_project/models/gold/
+      hash: md5
+      md5: 231877ca3f1f32478ffaed82c0c948bc.dir
+      size: 17298
+      nfiles: 17
+    outs:
+    - path: data/gold
+      hash: md5
+      md5: e7116c06b7bb309cdd80c2c14b9cb775.dir
+      size: 10419
+      nfiles: 3
+  build_gold_models:
+    cmd: dbt run --project-dir dbt_project --select stg_ledger +gold.* --profiles-dir
+      dbt_project
+    deps:
+    - path: data/silver/stg_ledger.parquet
+      hash: md5
+      md5: 441054331e48c65eb5b3f68a934e70aa
+      size: 262966180
+    - path: dbt_project/dbt_project.yml
+      hash: md5
+      md5: 5c0ca09d1d51d140761549273f0d71ec
+      size: 953
+    - path: dbt_project/models/gold/
+      hash: md5
+      md5: 2156e214f31e396be23eeccb2496bb1f.dir
+      size: 15589
+      nfiles: 16
+    - path: dbt_project/profiles.yml
+      hash: md5
+      md5: f41dd3996619a30db4c54554fe92337d
+      size: 265
+    outs:
+    - path: dbt_project/dbt_project.duckdb
+      hash: md5
+      md5: b47d8fc5df079f2fb79f8e3ad9fabe8c
+      size: 622080000
+  export_gold_to_parquet:
+    cmd: python scripts/export_gold_to_parquet.py
+    deps:
+    - path: dbt_project/dbt_project.duckdb
+      hash: md5
+      md5: b47d8fc5df079f2fb79f8e3ad9fabe8c
+      size: 622080000
+    - path: scripts/export_gold_to_parquet.py
+      hash: md5
+      md5: 74c34fa2f51e5787b7687c33f9673cac
+      size: 1196
+    outs:
+    - path: data/gold
+      hash: md5
+      md5: fb54d6a6c8de7f457ff4850bd8c822f8.dir
+      size: 542076099
+      nfiles: 16
+  validate_gold_data:
+    cmd: python scripts/validations/run_ge_validation_gold.py
+    deps:
+    - path: data/gold
+      hash: md5
+      md5: fb54d6a6c8de7f457ff4850bd8c822f8.dir
+      size: 542076099
+      nfiles: 16
+    - path: scripts/validations/run_ge_validation_gold.py
+      hash: md5
+      md5: 7f03533230121ac8f7acf463f97a462a
+      size: 10869
+    outs:
+    - path: great_expectations/uncommitted/data_docs/local_site_gold/index.html
+      hash: md5
+      md5: dfd2b214fd9a9a39d7d9dc3ac309e510
+      size: 1348

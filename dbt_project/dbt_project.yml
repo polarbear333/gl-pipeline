@@ -1,0 +1,42 @@
+# A descriptive name for your dbt project
+name: 'financial_monitoring_dbt'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dbt_project'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "dbt_project.duckdb" 
+
+vars:
+  raw_data_path: "data/raw"
+  # Restore original surrogate_key behaviour where nulls are treated as empty strings
+  surrogate_key_treat_nulls_as_empty_strings: true
+
+# Configuring our models based on the Medallion Architecture.
+models:
+  financial_monitoring_dbt:
+    +materialized: table
+    silver:
+      +duckdb_extensions:
+        - encodings
+      +tags: "silver_layer"
+    gold:
+      +tags: "gold_layer"
+
+      intermediate:
+        +materialized: ephemeral
+
+        int_transactions_joined_to_dims:
+          +materialized: table
+
+      

@@ -1,6 +1,0 @@
-[core]
-    remote = r2
-['remote "r2"']
-    url = s3://fms-bucket
-    endpointurl = https://457edc4356d82bcf70056d1fc983dc9a.r2.cloudflarestorage.com
-    region = auto

@@ -8,11 +8,49 @@ stages:
     outs:
       - data/raw
 
-  process:
-    cmd: python -m src.data.process_raw_data
+  transform_to_silver:
+    cmd: dbt run --project-dir dbt_project --select stg_ledger --profiles-dir dbt_project
     deps:
-      - src/data/process_raw_data.py
-      - src/config/settings.py
+      - dbt_project/models/silver/stg_ledger.sql
+      - dbt_project/models/sources.yml
+      - dbt_project/dbt_project.yml
+      - dbt_project/profiles.yml
       - data/raw
     outs:
-      - data/processed/general_ledger.parquet
+      - data/silver/stg_ledger.parquet
+
+  validate_silver_data:
+    cmd: python scripts/validations/run_ge_validation.py 
+    deps:
+      - scripts/validations/run_ge_validation.py
+      - data/silver/stg_ledger.parquet
+      - great_expectations/great_expectations.yml
+      - great_expectations/expectations
+    outs:
+      - great_expectations/uncommitted/data_docs/local_site/index.html
+  
+  build_gold_models:
+    cmd: dbt run --project-dir dbt_project --select stg_ledger +gold.* --profiles-dir dbt_project
+    deps:
+      - dbt_project/models/gold/
+      - dbt_project/dbt_project.yml
+      - dbt_project/profiles.yml
+      - data/silver/stg_ledger.parquet
+    outs:
+      - dbt_project/dbt_project.duckdb
+
+  export_gold_to_parquet:
+    cmd: python scripts/export_gold_to_parquet.py
+    deps:
+      - dbt_project/dbt_project.duckdb
+      - scripts/export_gold_to_parquet.py
+    outs:
+      - data/gold
+
+  validate_gold_data:
+    cmd: python scripts/validations/run_ge_validation_gold.py
+    deps:
+      - scripts/validations/run_ge_validation_gold.py
+      - data/gold
+    outs:
+      - great_expectations/uncommitted/data_docs/local_site_gold/index.html

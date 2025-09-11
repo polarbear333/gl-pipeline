@@ -6,8 +6,12 @@ isort>=5.12.0
 flake8>=6.1.0              
 ruff>=0.1.0                
 mypy>=1.5.0                
-pre-commit>=3.4.0          # Git hooks management
-great-expectations>=0.17.0 # Data validation (alternative to pandera)
+pre-commit>=3.4.0          
+great_expectations<=0.15.5 
+fastparquet>=2024.2.0
 ydata-profiling>=4.5.0     
+dbt-duckdb<=1.94
+dbt-core<=1.10.9  
 ipykernel                  
-nbdev                      
+nbdev       
+             

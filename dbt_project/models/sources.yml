@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: raw_ledger_data
+    description: "Raw General Ledger data from OK.gov, ingested via the DVC pipeline."
+    
+    tables:
+      - name: general_ledger_raw
+        description: "A virtual table representing the union of all raw quarterly ledger CSVs."
+        external:
+          location: "{{ var('raw_data_path') }}/ledger_fy*.csv"
+          options:
+            union_by_name: true
+            ignore_errors: true

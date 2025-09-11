@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: stg_ledger
+    description: "Cleaned, conformed, and de-duplicated ledger data. This is the single source of truth for analytics, representing one row per unique transaction line from the source files."
+    
+    columns:
+      - name: ledger_sk
+        description: "Surrogate key generated from a combination of business keys to uniquely identify each transaction line."
+        tests:
+          - unique
+          - not_null
+
+      - name: amount
+        description: "The monetary value of the transaction, cleaned of currency symbols and commas."
+        tests:
+          - not_null
+
+      - name: fiscal_year
+        description: "The fiscal year as recorded in the data file's 'FISCAL_YEAR' column."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2022, 2023, 2024, 2025, 2026] 
+
+      - name: file_fiscal_quarter
+        description: "The fiscal quarter derived reliably from the source file's name."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4]
+
+      - name: ledger
+        description: "The ledger type (e.g., ACTUALS, BUDGET)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["ACTUALS", "BUDGET", "ENCUMBRANCE", "APPROPRIATION"]
+
+      - name: agency_nbr
+        description: "The unique identifier for the government agency."
+        tests:
+          - not_null
+
+      - name: account
+        description: "The specific account code for the transaction."
+        tests:
+          - not_null
+          - assert_valid_account_for_fund:
+              fund_business_key_column: 'fund_code'
+              account_business_key_column: 'account'
+              # This mapping is our business rule, defined in code.
+              allowed_mappings:
+                # Example: Fund 019000 (a hypothetical highway fund)
+                # can only be used for accounts 531110 (Paving) and 531120 (Maintenance).
+                '019000': ['531110', '531120']
+                # Example: Fund 021000 (a hypothetical education fund)
+                # can only be used for account 552110 (Textbooks).
+                '021000': ['552110']
+
+      - name: dept_id
+        description: "The identifier for the department within the agency."
+        tests:
+          - not_null
+      
+      - name: agency_name
+        description: "The name of the government agency."
+      - name: accounting_period
+        description: "The accounting period (typically 1-12) within the fiscal year."
+      - name: fund_code
+        description: "Code for the financial fund."
+      - name: source_path
+        description: "The full path to the raw source file from which this record was loaded."

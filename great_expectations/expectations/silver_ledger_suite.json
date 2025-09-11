@@ -1,0 +1,86 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "silver_ledger_suite",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "ledger_sk"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "amount"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "fiscal_year"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "ledger"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "ledger_sk"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "amount"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_unique",
+      "kwargs": {
+        "column": "ledger_sk"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "fiscal_year",
+        "value_set": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "ledger",
+        "value_set": [
+          "ACTUALS",
+          "BUDGET",
+          "ENCUMBRANCE",
+          "APPROPRIATION"
+        ]
+      },
+      "meta": {}
+  }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "great_expectations_version": "0.14.11"
+  }
+}
