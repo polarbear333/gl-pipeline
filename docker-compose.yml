@@ -5,7 +5,7 @@ services:
     image: mchan193/metabase:latest  
     volumes:
       - mb-data:/home/metabase/data
-      - ./data/metabase/dbt_project.duckdb:/data/dbt_project.duckdb:ro
+      - duckdb-data:/data
     environment:
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: ${MB_DB_DBNAME}
@@ -14,11 +14,12 @@ services:
       MB_DB_PASS: ${MB_DB_PASS}  
       MB_DB_HOST: postgres
 
-      # Cloudflare R2 credentials for DuckDB
+      # Cloudflare R2 credentials for DuckDB download
       AWS_ACCESS_KEY_ID: ${CLOUDFLARE_R2_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CLOUDFLARE_R2_SECRET_ACCESS_KEY}
       AWS_REGION: auto
       AWS_ENDPOINT_URL_S3: ${CLOUDFLARE_R2_ENDPOINT_URL}
+      CLOUDFLARE_R2_BUCKET: fms-bucket
 
       # Java options
       JAVA_OPTS: "-Xmx2g"
@@ -53,3 +54,4 @@ services:
 volumes:
   mb-data:
   pg-data:
+  duckdb-data:

@@ -31,8 +31,13 @@ ADD --chown=metabase:metabase https://github.com/motherduckdb/metabase_duckdb_dr
 RUN chmod 644 /home/metabase/metabase.jar && \
     chmod 644 /home/metabase/plugins/duckdb.metabase-driver.jar
 
+# Copy and set up entrypoint script
+COPY entrypoint.sh /home/metabase/
+RUN chmod +x /home/metabase/entrypoint.sh && \
+    chown metabase:metabase /home/metabase/entrypoint.sh
+
 EXPOSE 3000
 
 USER metabase
 
-CMD ["java", "-jar", "/home/metabase/metabase.jar"]
+ENTRYPOINT ["/home/metabase/entrypoint.sh"]
