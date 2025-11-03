@@ -5,13 +5,14 @@ services:
     image: mchan193/metabase:latest  
     volumes:
       - mb-data:/home/metabase/data
-      - duckdb-data:/data
+      - ./data/dbt_project.duckdb:/data/dbt_project.duckdb:ro
     environment:
       MB_DB_TYPE: postgres
       MB_DB_DBNAME: ${MB_DB_DBNAME}
       MB_DB_PORT: ${MB_DB_PORT}
       MB_DB_USER: ${MB_DB_USER}
       MB_DB_PASS: ${MB_DB_PASS}  
+      MB_SITE_URL: https://metabase.polarbear333.dev
       MB_DB_HOST: postgres
 
       # Cloudflare R2 credentials for DuckDB download
@@ -54,4 +55,3 @@ services:
 volumes:
   mb-data:
   pg-data:
-  duckdb-data:

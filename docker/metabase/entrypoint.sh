@@ -2,25 +2,25 @@
 set -e
 
 DUCKDB_FILE="/data/dbt_project.duckdb"
-R2_BUCKET="${CLOUDFLARE_R2_BUCKET:-fms-bucket}"
-R2_URL="${AWS_ENDPOINT_URL_S3}/${R2_BUCKET}/dbt_project.duckdb"
+R2_PUBLIC_URL="${R2_PUBLIC_URL:-}"
 
 echo "🚀 Metabase Startup"
 
 # Check if DuckDB file exists
 if [ ! -f "$DUCKDB_FILE" ]; then
-    echo "📥 Downloading DuckDB from R2..."
-    echo "Source: ${R2_URL}"
-    
-    # Download from R2 using curl with AWS authentication
-    if curl -f -o "$DUCKDB_FILE" \
-        --aws-sigv4 "aws:amz:auto:s3" \
-        --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
-        "${R2_URL}"; then
-        echo "✅ Downloaded $(du -h "$DUCKDB_FILE" | cut -f1)"
+    if [ -n "$R2_PUBLIC_URL" ]; then
+        echo "📥 Downloading DuckDB from R2 public URL..."
+        echo "Source: ${R2_PUBLIC_URL}"
+        
+        if curl -f -L -o "$DUCKDB_FILE" "${R2_PUBLIC_URL}"; then
+            echo "✅ Downloaded $(du -h "$DUCKDB_FILE" | cut -f1)"
+        else
+            echo "❌ Failed to download from R2"
+            echo "⚠️  Starting Metabase without DuckDB file"
+        fi
     else
-        echo "❌ Failed to download from R2"
-        exit 1
+        echo "⚠️  No R2_PUBLIC_URL set, starting without DuckDB file"
+        echo "💡 You can manually upload the DuckDB file to /data/dbt_project.duckdb"
     fi
 else
     echo "✅ DuckDB exists: $(du -h "$DUCKDB_FILE" | cut -f1)"

@@ -63,6 +63,17 @@ jobs:
             # Set proper permissions for .env file
             chmod 600 .env
             
+            # Ensure data directory exists
+            mkdir -p data
+            
+            # Check if DuckDB file exists
+            if [ ! -f "data/dbt_project.duckdb" ]; then
+              echo "Warning: DuckDB file not found at data/dbt_project.duckdb"
+              echo "You need to upload it manually via SCP"
+            else
+              echo "DuckDB file exists: $(du -h data/dbt_project.duckdb | cut -f1)"
+            fi
+            
             echo "Pulling latest images..."
             docker compose pull
             
@@ -76,4 +87,4 @@ jobs:
             sleep 10
             docker compose ps
             
-            echo "✅ Deployment complete!"
+            echo "Deployment complete!"
