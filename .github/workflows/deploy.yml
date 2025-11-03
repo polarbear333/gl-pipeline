@@ -19,13 +19,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Copy docker-compose.yml to OCI VM
+      - name: Copy docker-compose.yml and nginx.conf to OCI VM
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.OCI_HOST }}
           username: ${{ vars.OCI_USER }}
           key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.yml, nginx.conf"
           target: ${{ vars.DEPLOY_DIR }}
 
       - name: Deploy to OCI VM via SSH

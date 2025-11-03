@@ -1,6 +1,17 @@
 version: "3.8"
 
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - metabase
+    restart: unless-stopped
+
   metabase:
     image: mchan193/metabase:latest  
     volumes:
@@ -15,17 +26,15 @@ services:
       MB_SITE_URL: https://metabase.polarbear333.dev
       MB_DB_HOST: postgres
 
-      # Cloudflare R2 credentials for DuckDB download
       AWS_ACCESS_KEY_ID: ${CLOUDFLARE_R2_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${CLOUDFLARE_R2_SECRET_ACCESS_KEY}
       AWS_REGION: auto
       AWS_ENDPOINT_URL_S3: ${CLOUDFLARE_R2_ENDPOINT_URL}
       CLOUDFLARE_R2_BUCKET: fms-bucket
 
-      # Java options
       JAVA_OPTS: "-Xmx2g"
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       - postgres
     healthcheck:
@@ -44,8 +53,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  
     volumes:
       - pg-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U metabase"]
       interval: 10s
