@@ -1,0 +1,84 @@
+name: Deploy to OCI Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t ${{ vars.IMAGE_NAME }}:latest .
+          docker push ${{ vars.IMAGE_NAME }}:latest
+
+      - name: Copy docker-compose.yml to OCI VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.OCI_HOST }}
+          username: ${{ vars.OCI_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: ${{ vars.DEPLOY_DIR }}
+
+      - name: Deploy to OCI VM via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.OCI_HOST }}
+          username: ${{ vars.OCI_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            
+            # Create deployment directory if it doesn't exist
+            mkdir -p ${{ vars.DEPLOY_DIR }}
+            cd ${{ vars.DEPLOY_DIR }}
+            
+            # Create .env file with secrets
+            cat > .env << EOF
+            # PostgreSQL Configuration
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            
+            # Metabase Database Connection
+            MB_DB_DBNAME=${{ secrets.MB_DB_DBNAME }}
+            MB_DB_PORT=${{ secrets.MB_DB_PORT }}
+            MB_DB_USER=${{ secrets.MB_DB_USER }}
+            MB_DB_PASS=${{ secrets.POSTGRES_PASSWORD }}
+            
+            # Cloudflare R2 Credentials
+            CLOUDFLARE_R2_ACCESS_KEY_ID=${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+            CLOUDFLARE_R2_SECRET_ACCESS_KEY=${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+            CLOUDFLARE_R2_ENDPOINT_URL=${{ vars.CLOUDFLARE_R2_ENDPOINT_URL }}
+            EOF
+            
+            # Set proper permissions for .env file
+            chmod 600 .env
+            
+            echo "Pulling latest images..."
+            docker-compose pull
+            
+            echo "Stopping existing services..."
+            docker-compose down
+            
+            echo "Starting services with new configuration..."
+            docker-compose up -d
+            
+            echo "Waiting for services to be healthy..."
+            sleep 10
+            docker-compose ps
+            
+            echo "✅ Deployment complete!"

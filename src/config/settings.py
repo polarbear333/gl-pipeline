@@ -77,9 +77,26 @@ class Settings(BaseSettings):
     ]
 
     CLOUDFLARE_R2_ACCESS_KEY_ID: str
-    CLOUDFLARE_R2_ACCESS_KEY_ID: str
     CLOUDFLARE_R2_SECRET_ACCESS_KEY: str
+    CLOUDFLARE_R2_ENDPOINT_URL: str
     CLOUDFLARE_R2_BUCKET_NAME: str
+
+    # Properties for backwards compatibility
+    @property
+    def R2_ACCESS_KEY_ID(self) -> str:
+        return self.CLOUDFLARE_R2_ACCESS_KEY_ID
+    
+    @property
+    def R2_SECRET_ACCESS_KEY(self) -> str:
+        return self.CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    
+    @property
+    def R2_ENDPOINT_URL(self) -> str:
+        return self.CLOUDFLARE_R2_ENDPOINT_URL
+    
+    @property
+    def R2_BUCKET_NAME(self) -> str:
+        return self.CLOUDFLARE_R2_BUCKET_NAME
 
     SCHEMA_PATH: Path = Path("src/schemas/ledger.py")
     PROFILES_DIR: Path = Path("data/profiles")

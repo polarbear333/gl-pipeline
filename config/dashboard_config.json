@@ -1,0 +1,82 @@
+{
+  "name": "Financial Overview",
+  "description": "Main financial monitoring dashboard",
+  "cards": [
+    {
+      "name": "Total Transactions",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT COUNT(*) as total_transactions FROM main.fact_transactions"
+        },
+        "database": 2
+      },
+      "display": "scalar",
+      "visualization_settings": {},
+      "sizeX": 4,
+      "sizeY": 3,
+      "row": 0,
+      "col": 0
+    },
+    {
+      "name": "Total Amount",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT SUM(amount) as total_amount FROM main.fact_transactions"
+        },
+        "database": 2
+      },
+      "display": "scalar",
+      "visualization_settings": {
+        "column_settings": {
+          "[\"name\",\"total_amount\"]": {
+            "number_style": "currency"
+          }
+        }
+      },
+      "sizeX": 4,
+      "sizeY": 3,
+      "row": 0,
+      "col": 4
+    },
+    {
+      "name": "Spending by Category",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT category, SUM(amount) as total FROM main.fact_transactions GROUP BY category ORDER BY total DESC LIMIT 10"
+        },
+        "database": 2
+      },
+      "display": "bar",
+      "visualization_settings": {
+        "graph.dimensions": ["category"],
+        "graph.metrics": ["total"]
+      },
+      "sizeX": 8,
+      "sizeY": 6,
+      "row": 3,
+      "col": 0
+    },
+    {
+      "name": "Monthly Trends",
+      "dataset_query": {
+        "type": "native",
+        "native": {
+          "query": "SELECT DATE_TRUNC('month', transaction_date) as month, SUM(amount) as total FROM main.fact_transactions GROUP BY month ORDER BY month"
+        },
+        "database": 2
+      },
+      "display": "line",
+      "visualization_settings": {
+        "graph.dimensions": ["month"],
+        "graph.metrics": ["total"]
+      },
+      "sizeX": 8,
+      "sizeY": 6,
+      "row": 3,
+      "col": 8
+    }
+  ]
+}
