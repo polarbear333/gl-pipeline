@@ -64,16 +64,16 @@ jobs:
             chmod 600 .env
             
             echo "Pulling latest images..."
-            docker-compose pull
+            docker compose pull
             
             echo "Stopping existing services..."
-            docker-compose down
+            docker compose down
             
             echo "Starting services with new configuration..."
-            docker-compose up -d
+            docker compose up -d
             
             echo "Waiting for services to be healthy..."
             sleep 10
-            docker-compose ps
+            docker compose ps
             
             echo "✅ Deployment complete!"
