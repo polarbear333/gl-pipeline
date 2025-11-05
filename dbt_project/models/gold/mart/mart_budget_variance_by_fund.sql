@@ -1,13 +1,12 @@
 {{ config(materialized='table', tags=['gold_layer', 'mart']) }}
 
--- This mart calculates the variance between actuals and budgeted amounts by fund and fiscal year.
 with actuals as (
     select
         fiscal_year,
         fund_sk,
         sum(amount) as actual_amount
     from {{ ref('fct_transactions') }}
-    where ledger = 'ACTUALS' -- Assuming 'ACTUALS' is in fct_transactions or joined from a dim
+    where ledger = 'ACTUALS' 
     group by 1, 2
 ),
 
@@ -17,7 +16,7 @@ budgets as (
         fund_sk,
         sum(amount) as budgeted_amount
     from {{ ref('fct_transactions') }}
-    where ledger = 'BUDGET' -- Or join to a budget-specific source
+    where ledger = 'BUDGET' 
     group by 1, 2
 )
 

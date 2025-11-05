@@ -21,7 +21,6 @@ with calculated_aggregates as (
     group by 1, 2
 ),
 
--- The `ref()` function on a seed file makes it a queryable table.
 published_targets as (
     select * from {{ ref('published_financial_targets') }}
 ),
@@ -36,9 +35,7 @@ final as (
     join published_targets published
         on calculated.metric_name = published.metric_name
         and calculated.fiscal_year = published.fiscal_year
-    -- Use a tolerance for floating point comparisons
     where abs(calculated.calculated_value - published.expected_value_usd) > 0.01
 )
 
--- If this query returns any rows (i.e., any mismatches), the test fails.
 select * from final

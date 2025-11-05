@@ -26,9 +26,9 @@ def export_gold_to_parquet():
             print(f"[{i}/{total}] Exporting {table_name} -> {out_path}")
             con.execute(f"COPY {table_name} TO '{out_path}' (FORMAT PARQUET, CODEC 'ZSTD')")
             elapsed = time.time() - start
-            print(f"  ✅ {table_name} done in {elapsed:.2f}s")
+            print(f"{table_name} done in {elapsed:.2f}s")
 
-        print(f"✅ Successfully exported all {total} tables to {export_dir}")
+        print(f"Successfully exported all {total} tables to {export_dir}")
 
     finally:
         con.close()

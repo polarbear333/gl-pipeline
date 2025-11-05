@@ -31,9 +31,8 @@ def build_gold_kpi_expectations(validator: Validator):
     validator.expect_column_min_to_be_between("total_expenses", min_value=-50_000_000_000.0)
     validator.expect_column_max_to_be_between("total_revenue", max_value=50_000_000_000.0)
     
-    # Critical Business Logic Check (from our dbt test)
-    # This ensures the KPI math is correct.
+    # Critical Business Logic Check 
     validator.expect_select_column_values_to_be_equal_to_other_column(
         column_A="net_amount",
-        column_B="total_revenue_plus_expenses" # A temporary column we create
+        column_B="total_revenue_plus_expenses" 
     )

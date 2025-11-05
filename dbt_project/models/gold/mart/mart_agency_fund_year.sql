@@ -3,8 +3,6 @@
     tags=['gold_layer', 'mart']
 ) }}
 
--- This Data Mart provides an annual summary of spending for each agency from each fund.
--- It's ideal for high-level budgetary review and cross-agency comparisons.
 
 with transactions as (
     select * from {{ ref('fct_transactions') }}

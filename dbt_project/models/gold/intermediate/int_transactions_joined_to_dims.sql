@@ -3,19 +3,16 @@
 ) }}
 
 select
-    -- Keys
     tx.agency_sk,
     tx.fund_sk,
     tx.department_sk,
     tx.account_sk,
 
-    -- Descriptive Fields
     agencies.agency_name,
     funds.fund_name,
     deps.department_name,
     accts.account_name,
 
-    -- Facts and Dates
     tx.amount,
     tx.fiscal_year,
     tx.accounting_period as month

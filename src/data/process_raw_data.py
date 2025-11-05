@@ -37,12 +37,6 @@ def main(
 
     full_df = pd.concat(df_list, ignore_index=True)
     logger.success(f"Successfully merged all files. Total rows: {len(full_df)}")
-
-    # --- This is where future cleaning/transformation would go ---
-    # Example: full_df['Amount'] = pd.to_numeric(full_df['Amount'])
-    # Example: full_df['Date'] = pd.to_datetime(full_df['Date'])
-    # -----------------------------------------------------------
-
     settings.PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
     if output_format == "parquet":
         output_path = settings.PROCESSED_DATA_DIR / settings.PROCESSED_DATA_FILE

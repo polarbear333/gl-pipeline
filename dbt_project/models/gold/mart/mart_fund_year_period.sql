@@ -3,9 +3,6 @@
     tags=['gold_layer', 'mart']
 ) }}
 
--- This Data Mart aggregates financial data to a monthly level for each fund,
--- enabling time-series analysis of specific funding pools.
-
 with transactions as (
     select * from {{ ref('fct_transactions') }}
 ),
@@ -20,7 +17,6 @@ select
     funds.fund_business_key as fund_code,
     funds.fund_name as fund_name,
 
-    -- We use the exact same, consistent KPI logic as our other marts.
     sum(case when transactions.amount >= 0 then transactions.amount else 0 end) as total_revenue,
     sum(case when transactions.amount < 0 then transactions.amount else 0 end) as total_expenses,
     

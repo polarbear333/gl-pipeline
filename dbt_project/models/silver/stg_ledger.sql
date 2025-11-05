@@ -4,7 +4,6 @@
     post_hook="COPY (SELECT * FROM {{ this }}) TO 'data/silver/stg_ledger.parquet' (FORMAT PARQUET)"
 ) }}
 
--- Your source and renamed CTEs are excellent. No changes needed there.
 with source as (
     select * from read_csv_auto(
         '{{ var("raw_data_path") }}/ledger_fy*.csv',
@@ -16,7 +15,6 @@ with source as (
 ),
 
 renamed as (
-    -- This CTE is solid.
     select
         NULLIF(coalesce(trim(AGENCYNBR), trim(OPERATING_UNIT)), '')   as agency_nbr,
         coalesce(trim(AGENCYNAME), trim(OPERUNITDESCR)) as agency_name,
@@ -59,7 +57,6 @@ renamed as (
 ),
 
 casted_and_derived as (
-    -- Your casting logic is solid.
     select
         agency_nbr,
         agency_name,
@@ -101,11 +98,9 @@ casted_and_derived as (
     from renamed
 ),
 
--- NEW CTE: Enforce data quality rules before generating the final key.
 quality_filtered as (
     select * from casted_and_derived
     where
-        -- Filter out rows where key components are null, which would create a null surrogate key.
         agency_nbr is not null
         and ledger is not null
         and fiscal_year is not null
@@ -118,7 +113,6 @@ quality_filtered as (
 
 final as (
     select
-    -- Use the updated dbt_utils macro to avoid deprecation warnings.
     {{ dbt_utils.generate_surrogate_key([
             'agency_nbr',
             'ledger',

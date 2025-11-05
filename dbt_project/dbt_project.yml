@@ -1,4 +1,3 @@
-# A descriptive name for your dbt project
 name: 'financial_monitoring_dbt'
 version: '1.0.0'
 config-version: 2
@@ -19,10 +18,8 @@ clean-targets:
 
 vars:
   raw_data_path: "data/raw"
-  # Restore original surrogate_key behaviour where nulls are treated as empty strings
   surrogate_key_treat_nulls_as_empty_strings: true
 
-# Configuring our models based on the Medallion Architecture.
 models:
   financial_monitoring_dbt:
     +materialized: table

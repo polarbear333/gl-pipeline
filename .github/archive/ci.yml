@@ -1,0 +1,45 @@
+name: Data pipeline triggers
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # If dbt is not in your requirements.txt, install it manually:
+          pip install dbt-core dbt-duckdb
+          pip install ruff mypy black
+
+      - name: Lint and Type Check
+        run: |
+          ruff check .
+          mypy src/
+          black --check .
+
+      - name: Run Silver Transformation
+        run: |
+          dbt deps --project-dir dbt_project
+          dbt run --project-dir dbt_project --select stg_ledger
+
+      - name: Validate Data Quality
+        run: python scripts/validations/run_ge_validation.py
+
+      - name: Build Gold Models and Test
+        run: |
+          dbt run --project-dir dbt_project --models gold.*
+          dbt test --project-dir dbt_project

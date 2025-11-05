@@ -102,9 +102,6 @@ class Settings(BaseSettings):
     PROFILES_DIR: Path = Path("data/profiles")
     GE_DIR: Path = Path("great_expectations")
 
-    MLFLOW_TRACKING_URI: str = "http://127.0.0.1:5000"
-    MLFLOW_EXPERIMENT_NAME: str = "Financial Monitoring System"
-
     MAX_CONCURRENT_DOWNLOADS: int = 5
     
     #pydantic model configuration
