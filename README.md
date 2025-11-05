@@ -1,11 +1,18 @@
 # GL-Pipeline
 
 [![Production Status](https://github.com/polarbear333/gl-pipeline/actions/workflows/deploy.yml/badge.svg)](https://github.com/polarbear333/gl-pipeline/actions/workflows/deploy.yml)
+[![View Dashboard](https://img.shields.io/badge/Metabase-Dashboard-blue?logo=metabase)](https://metabase.polarbear333.dev/public/dashboard/abeb32a9-2992-403d-a138-b970748e18ff?department_name=Engineering+and+Tech+Support&fiscal_year=2024&fund_name=General+Fund+-+No+Divisions&tab=5-agency-performance)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![dbt](https://img.shields.io/badge/dbt-1.8+-orange.svg)](https://docs.getdbt.com/)
-[![DuckDB](https://img.shields.io/badge/DuckDB-latest-yellow.svg)](https://duckdb.org/)
+[![DuckDB](https://img.shields.io/badge/DuckDB-1.94+-yellow.svg)](https://duckdb.org/)
+[![DVC](https://img.shields.io/badge/DVC-3.61+-purple.svg)](https://dvc.org/)
+[![Metabase](https://img.shields.io/badge/Metabase-Running-green.svg)](https://www.metabase.com/)
 
 A production-grade financial data pipeline demonstrating modern data engineering practices for general ledger processing. Built with dbt, DuckDB, and DVC to transform raw transaction data into auditable, analytics-ready dimensional models.
+
+Check out my deployed Metabase dashboard! [[Metabase Dashboard](https://metabase.polarbear333.dev/public/dashboard/abeb32a9-2992-403d-a138-b970748e18ff?department_name=Engineering+and+Tech+Support&fiscal_year=2024&fund_name=General+Fund+-+No+Divisions&tab=5-agency-performance)] 
+
+[![View Dashboard](https://img.shields.io/badge/Metabase-Dashboard-blue?logo=metabase)](https://metabase.polarbear333.dev/public/dashboard/abeb32a9-2992-403d-a138-b970748e18ff?department_name=Engineering+and+Tech+Support&fiscal_year=2024&fund_name=General+Fund+-+No+Divisions&tab=5-agency-performance)
 
 ## What This Is
 
